@@ -24,6 +24,7 @@ export type FlatType = {
   tuple?: FlatType[];
   isCollection: boolean;
   isNullable: boolean;
+  path: string;
 }
 
 export type GeneratorCallable = [Function, Array<unknown>]

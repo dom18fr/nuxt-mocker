@@ -3,7 +3,7 @@ import { useRuntimeConfig } from "#imports";
 import delay from "delay";
 import { getCallable, isMockable } from "./fakerGenerator";
 import memo from "nano-memoize";
-import { MockConfigItem, FlatType, FlatTypesRegistry, GeneratorCallable, MockedData, PolygenOptions } from "./nuxtMockerTypes";
+import { MockConfigItem, FlatType, FlatTypesRegistry, GeneratorCallable, MockedData, PolygenOptions, TypeConfigItem } from "./nuxtMockerTypes";
 
 export default defineNuxtPlugin(() => {
   const baseFetch = globalThis.$fetch;
@@ -24,6 +24,7 @@ const mockableFetch =
     const config = getMockConfig(path);
     if (config) {
       const types = useRuntimeConfig().nuxtMocker.types
+      const typeConfig = useRuntimeConfig().nuxtMocker.typeConfig
       if (types) {
         const querySeed = useRoute().query.seed
         const seed = querySeed ? parseInt(String(querySeed)): undefined
@@ -31,7 +32,7 @@ const mockableFetch =
         // @ts-ignore
         const type = types[config.type]
         // @ts-ignore
-        return buildMock(config, type, types, seed)
+        return buildMock(config, type, types, config.type, typeConfig, seed)
       }
     }
 
@@ -57,27 +58,31 @@ const buildMock = (
   mockConfig: MockConfigItem,
   type: FlatType,
   types: FlatTypesRegistry,
-  seed?: number
+  path: string,
+  typeConfig: TypeConfigItem[],
+  seed?: number,
 ) => {
   if (type.typeName) {
 
-    return buildMockNode(type, types, mockConfig, seed)
+    return buildMockNode(type, types, mockConfig, path, typeConfig, seed)
   }
   if (type.tuple) {
 
-    return type.tuple.map(tupledType => buildMockNode(tupledType, types, mockConfig, seed))
+    return type.tuple.map(
+      (tupledType, index) => buildMockNode(tupledType, types, mockConfig, `${path}[${index}]`, typeConfig, seed)
+    )
   }
   if (type.union) {
     const index = seed ? randomMemoUnionIndex(type.union, seed) : randomUnionIndex(type.union)
     
-    return buildMockNode(type.union[index], types, mockConfig, seed)
+    return buildMockNode(type.union[index], types, mockConfig, `${path}[${index}]`, typeConfig, seed)
   }
   if (type.object) {
 
     return Object.keys(type.object).reduce(
       (mocked: Record<string, MockedData>, key) => {
         const memberType = (type.object as FlatTypesRegistry)[key]
-        const value = buildMockNode(memberType, types, mockConfig, seed)
+        const value = buildMockNode(memberType, types, mockConfig, `${path}.${key}`, typeConfig, seed)
 
         return {
           ...mocked,
@@ -88,16 +93,19 @@ const buildMock = (
     );
   }
   if (type.literal) {
-    
+
     return type.literal
   }
 };
 
 
-const buildMockNode = (type: FlatType, types: FlatTypesRegistry, mockConfig: MockConfigItem, seed?: number) => {
-
+const buildMockNode = (type: FlatType, types: FlatTypesRegistry, mockConfig: MockConfigItem, path: string, typeConfig: TypeConfigItem[], seed?: number) => {
+  const { path: typeConfigItemPath, ...currentTypeConfig } = typeConfig.filter(
+    typeConfigItem => typeConfigItem.path === path
+  )[0] || {}
   const polygenOptions = {
     ...mockConfig,
+    ...currentTypeConfig,
     isCollection: type.isCollection,
     isNullable: type.isNullable
   }
@@ -112,7 +120,7 @@ const buildMockNode = (type: FlatType, types: FlatTypesRegistry, mockConfig: Moc
 
       return polygen(
         buildMock,
-        [ mockConfig, {...type, typeName: undefined, object: subtype.object}, types, seed ],
+        [ mockConfig, {...type, typeName: undefined, object: subtype.object}, types, path, typeConfig, seed ],
         polygenOptions,
       )
     }
@@ -120,7 +128,7 @@ const buildMockNode = (type: FlatType, types: FlatTypesRegistry, mockConfig: Moc
 
   return polygen(
     buildMock,
-    [ mockConfig, type, seed ],
+    [ mockConfig, type, types, path, typeConfig, seed ],
     polygenOptions,
   )
 }

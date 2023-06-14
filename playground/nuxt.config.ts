@@ -10,9 +10,14 @@ export default defineNuxtConfig({
     ],
     typeConfig: [
       {
-        'Youp.longList': {
-          
-        }
+        path: 'Youp.longList',
+        collectionMinLength: 15,
+        collectionMaxLength: 30,
+      },
+      {
+        path: 'Youp.shortList',
+        collectionMinLength: 1,
+        collectionMaxLength: 2,
       }
     ]
   },

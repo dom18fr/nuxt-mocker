@@ -1,0 +1,158 @@
+import { defineNuxtPlugin, useRoute } from "#app";
+import { useRuntimeConfig } from "#imports";
+import delay from "delay";
+import { getCallable, isMockable } from "./fakerGenerator";
+import memo from "nano-memoize";
+import { MockConfigItem, FlatType, FlatTypesRegistry, GeneratorCallable, MockedData, PolygenOptions } from "./nuxtMockerTypes";
+
+export default defineNuxtPlugin(() => {
+  const baseFetch = globalThis.$fetch;
+  // @ts-ignore
+  globalThis.$fetch = mockableFetch(baseFetch);
+
+  return {
+    provide: {},
+    name: "nuxt-mocker-plugin",
+    enforce: "post",
+  };
+});
+
+// @todo: Better use ofetch.create() (see https://github.com/unjs/ofetch/issues/79)
+const mockableFetch =
+// @ts-ignore
+  (baseFetch) => async (path: string, options: Record<string, unknown>) => {
+    const config = getMockConfig(path);
+    if (config) {
+      const types = useRuntimeConfig().nuxtMocker.types
+      if (types) {
+        const querySeed = useRoute().query.seed
+        const seed = querySeed ? parseInt(String(querySeed)): undefined
+        await delay(config.delay || 0)
+        // @ts-ignore
+        const type = types[config.type]
+        // @ts-ignore
+        return buildMock(config, type, types, seed)
+      }
+    }
+
+    return baseFetch(path, options);
+  };
+
+const getMockConfig = (path: string) => {
+  const mocks = useRuntimeConfig().nuxtMocker.mocks as MockConfigItem[]
+  return mocks.reduce(
+    (acc: MockConfigItem | undefined, mockConfigItem) => {
+      const pattern = new RegExp(mockConfigItem.pattern);
+      if (!acc && path.match(pattern) !== null) {
+        return mockConfigItem;
+      }
+
+      return acc;
+    },
+    undefined
+  );
+};
+
+const buildMock = (
+  mockConfig: MockConfigItem,
+  type: FlatType,
+  types: FlatTypesRegistry,
+  seed?: number
+) => {
+  if (type.typeName) {
+
+    return buildMockNode(type, types, mockConfig, seed)
+  }
+  if (type.tuple) {
+
+    return type.tuple.map(tupledType => buildMockNode(tupledType, types, mockConfig, seed))
+  }
+  if (type.union) {
+    const index = seed ? randomMemoUnionIndex(type.union, seed) : randomUnionIndex(type.union)
+    
+    return buildMockNode(type.union[index], types, mockConfig, seed)
+  }
+  if (type.object) {
+
+    return Object.keys(type.object).reduce(
+      (mocked: Record<string, MockedData>, key) => {
+        const memberType = (type.object as FlatTypesRegistry)[key]
+        const value = buildMockNode(memberType, types, mockConfig, seed)
+
+        return {
+          ...mocked,
+          ...(value ? { [key]: value }: {})
+        }
+      }, 
+      {}
+    );
+  }
+  if (type.literal) {
+    
+    return type.literal
+  }
+};
+
+
+const buildMockNode = (type: FlatType, types: FlatTypesRegistry, mockConfig: MockConfigItem, seed?: number) => {
+
+  const polygenOptions = {
+    ...mockConfig,
+    isCollection: type.isCollection,
+    isNullable: type.isNullable
+  }
+  if (type.typeName) {
+    if (isMockable(type.typeName)) {
+      const [ generator, parameters = [] ] = getCallable(type.typeName, seed) as GeneratorCallable
+      
+      return polygen(generator, parameters, polygenOptions)
+    }
+    const subtype = types[type.typeName]
+    if (subtype) {
+
+      return polygen(
+        buildMock,
+        [ mockConfig, {...type, typeName: undefined, object: subtype.object}, types, seed ],
+        polygenOptions,
+      )
+    }
+  }
+
+  return polygen(
+    buildMock,
+    [ mockConfig, type, seed ],
+    polygenOptions,
+  )
+}
+
+const polygen = (
+  generator: Function, 
+  parameters: unknown[], 
+  { 
+    isCollection,
+    collectionMaxLength: max = 3,
+    collectionMinLength: min = 1,
+    isNullable,
+    probabilityPercent = 50
+  }: PolygenOptions
+) => {
+  
+  if (isNullable && Math.random() * 100 > probabilityPercent) {
+
+    return undefined
+  }
+
+  if (!isCollection) {
+
+    return generator(...parameters)
+  }
+
+  const length = Math.round(Math.random() * (max - min) + min)
+
+  return [...Array(length).keys()].map(
+    () => generator(...parameters)
+  )
+}
+
+const randomMemoUnionIndex = memo((union: FlatType[], seed: number) => Math.floor(Math.random() * union.length))
+const randomUnionIndex = (union: FlatType[]) => Math.floor(Math.random() * union.length)

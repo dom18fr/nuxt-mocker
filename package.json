@@ -1,6 +1,6 @@
 {
   "name": "nuxt-mocker",
-  "version": "1.0.29",
+  "version": "1.0.30",
   "description": "A Typescript based Nuxt mocking tool, using fakerjs",
   "repository": "dom18fr/nuxt-mocker",
   "license": "MIT",
@@ -32,7 +32,7 @@
     "@nuxt/kit": "^3.5.3",
     "@types/memoizee": "^0.4.8",
     "delay": "^6.0.0",
-    "nano-memoize": "^3.0.11",
+    "fast-memoize": "^2.5.2",
     "ts-morph": "^18.0.0"
   },
   "devDependencies": {

@@ -1,4 +1,4 @@
-import memo from "nano-memoize";
+import memo from "fast-memoize";
 
 export default memo((plainText: string) => plainText.split('\n').reduce((acc, paragraph) => `${acc}<p>${injectInParagraph(paragraph).text}</p>`,''))
 

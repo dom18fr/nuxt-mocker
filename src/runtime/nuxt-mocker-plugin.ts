@@ -2,7 +2,7 @@ import { defineNuxtPlugin, useRoute } from "#app";
 import { useRuntimeConfig } from "#imports";
 import delay from "delay";
 import { getCallable, isMockable } from "./fakerGenerator";
-import memo from "nano-memoize";
+import memo from "fast-memoize";
 import { MockConfigItem, FlatType, FlatTypesRegistry, GeneratorCallable, MockedData, PolygenOptions, TypeConfigItem } from "./nuxtMockerTypes";
 
 export default defineNuxtPlugin(() => {

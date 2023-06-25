@@ -1,4 +1,13 @@
 type Youp = {
-  shortList: Word[],
-  longList: Word[]
+  shortList: Word[]
+  oo: {
+    yololo: Words[]
+    toto: Date[]
+  }
+  anotherComplexType: AnotherComplexType
+}
+
+type AnotherComplexType = {
+  prenom: FirstName
+  nom: LastName
 }

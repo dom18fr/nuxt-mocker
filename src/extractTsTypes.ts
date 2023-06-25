@@ -1,8 +1,8 @@
-import { TypeLiteralNode, SourceFile, SyntaxKind, TypeElementTypes, ts } from "ts-morph";
+import { TypeLiteralNode, SourceFile, SyntaxKind, TypeElementTypes, ts, TypeNode, TypeElementMemberedNode, ObjectLiteralExpression } from "ts-morph";
 import { FlatTypesRegistry } from './runtime/nuxtMockerTypes'
 
 export default async () => {
-  const sourceFiles = await getTsSourceFiles();
+  const sourceFiles = await getTsSourceFiles()
 
   const flatTypes = sourceFiles.reduce(
     (tsTypes: FlatTypesRegistry, sourceFile) => {
@@ -17,13 +17,13 @@ export default async () => {
       };
     },
     {}
-  );
+  )
 
   return flatTypes
 };
 
 const getTsSourceFiles = async () => {
-  const { Project } = await import("ts-morph");
+  const { Project } = await import("ts-morph")
 
   return new Project({
     tsConfigFilePath: "tsconfig.json",
@@ -94,7 +94,7 @@ const extractMembers = (members: FlatTypesRegistry | {}, member: TypeElementType
         ...members,
         [memberSymbol.getName()]: {
           typeName: (member.compilerNode.type as ts.ArrayTypeNode).elementType.getText(),
-          isNullable: member.getType().isNullable(),
+          isNullable: memberType.isNullable(),
           isCollection: true
         },
       }
@@ -154,7 +154,25 @@ const extractMembers = (members: FlatTypesRegistry | {}, member: TypeElementType
       }
     }
 
-    // @todo: implement here embed objects
+    // Object
+    if (memberType.isObject()) {
+      const subType = member.getChildrenOfKind(SyntaxKind.TypeLiteral)[0]
+      if (subType) {
+        const object: FlatTypesRegistry = subType.getChildrenOfKind(SyntaxKind.PropertySignature).reduce(
+          extractMembers,
+          {}
+        )
+
+        return {
+          ...members,
+          [memberSymbol.getName()]: {
+            object,
+            isNullable: member.getType().isNullable(),
+            isCollection: false
+          },
+        }
+      }
+    }
 
     // @todo: should implement Record<>
 
@@ -168,7 +186,7 @@ const extractMembers = (members: FlatTypesRegistry | {}, member: TypeElementType
       },
     }
   }
-
+  
   return members
 }
 

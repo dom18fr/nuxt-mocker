@@ -111,7 +111,7 @@ const buildMockNode = (type: FlatType, types: FlatTypesRegistry, mockConfig: Moc
   }
   if (type.typeName) {
     if (isMockable(type.typeName)) {
-      const [ generator, parameters = [] ] = getCallable(type.typeName, seed) as GeneratorCallable
+      const [ generator, parameters = [] ] = getCallable(type.typeName, seed, [ polygenOptions.imagesSize ]) as GeneratorCallable
       
       return polygen(generator, parameters, polygenOptions)
     }

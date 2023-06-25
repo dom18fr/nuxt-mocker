@@ -5,7 +5,11 @@ export default defineNuxtConfig({
     mocks: [
       {
         pattern: '^.*/real/.*$',
-        type: 'Youp'
+        type: 'Youp',
+        imagesSize: {
+          width: 1024,
+          height: 768
+        }
       }
     ],
     typeConfig: [
@@ -18,6 +22,14 @@ export default defineNuxtConfig({
         path: 'Youp.shortList',
         collectionMinLength: 1,
         collectionMaxLength: 2,
+      },
+      {
+        path: 'Youp.anotherComplexType.image',
+        imagesSize: {
+          width: 240,
+          height: 120
+        }
+
       }
     ]
   },

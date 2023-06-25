@@ -1,12 +1,19 @@
-<script setup>
+<script setup lang="ts">
 import { useAsyncData } from '#imports';
 
-const { data } = await useAsyncData(`trial_data`, () => $fetch(`/my/real/path`), )
-console.log(data.value)
+const { data } = await useAsyncData(`trial_data`, () => $fetch<Youp>(`/my/real/path`), )
 </script>
 
 <template>
-  <div>
-    {{ data }}
+  <div v-if="data">
+    <div>
+      {{ data }}
+    </div>
+    <div>
+      <img :src="data.aLargeImage" alt="" />
+    </div>
+    <div>
+      <img :src="data.anotherComplexType.image" alt=""/>
+    </div>
   </div>
 </template>

@@ -41,12 +41,6 @@ const injectInParagraph = (paragraph: string) => paragraph.split(' ').reduce(
         wordCountMin: 1,
         wordCountMax: 4,
         probability: 5
-      },
-      {
-        tagName: 'a',
-        wordCountMin: 1,
-        wordCountMax: 3,
-        probability: 10
       }
     ]
     const universe = tagInjectionsMap.reduce((acc,{ probability }: HtmlTagInjectionMapItem) => acc + probability, 0)

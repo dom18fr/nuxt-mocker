@@ -6,14 +6,14 @@ export const isMockable = (name: string) => {
   return getCallablesDefinitions(faker).hasOwnProperty(name)
 }
 
-export const getCallable = (name: string, seed?: number) => {
+export const getCallable = (name: string, seed?: number, generatorParams?: Array<any>) => {
   faker.seed(seed)
-  const definitions = getCallablesDefinitions(faker) as Record<string, unknown>
+  const definitions = getCallablesDefinitions(faker, generatorParams) as Record<string, unknown>
 
   return definitions[name] || [() => undefined, []]
 }
-
-const getCallablesDefinitions = (faker: Faker) => ({
+ 
+const getCallablesDefinitions = (faker: Faker, generatorParams: Array<any> = []) => ({
   string : [ faker.lorem.sentence ],
   number: [ faker.number.int ],
   boolean: [ faker.datatype.boolean ],
@@ -84,5 +84,9 @@ const getCallablesDefinitions = (faker: Faker) => ({
   ],
   Float: [
     faker.number.float
+  ],
+  ImageSrc: [
+    faker.image.url,
+    [ ...generatorParams ]
   ]
 })

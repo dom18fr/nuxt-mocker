@@ -29,3 +29,5 @@ type Country = string;
 type Int = number;
 
 type Float = number;
+
+type ImageSrc = string;

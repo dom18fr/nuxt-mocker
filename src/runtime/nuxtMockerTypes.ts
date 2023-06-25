@@ -2,6 +2,10 @@ export type PolygenConfigItem = {
   probabilityPercent?: number;
   collectionMinLength?: number;
   collectionMaxLength?: number;
+  imagesSize?: {
+    width: number,
+    height: number, 
+  }
 }
 
 export type TypeConfigItem = { path: string } & PolygenConfigItem // @todo: add {factory?: Function | string} in it

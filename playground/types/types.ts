@@ -1,15 +1,15 @@
 type Youp = {
-  shortList: Word[]
+  shortList: Word[];
   oo: {
-    yololo: Words[]
-    toto: Date[]
+    yololo: HtmlLongString;
+    toto: Date[];
   }
-  aLargeImage: ImageSrc
-  anotherComplexType: AnotherComplexType
+  aLargeImage: ImageSrc;
+  anotherComplexType: AnotherComplexType;
 }
 
 type AnotherComplexType = {
-  prenom: FirstName
-  nom: LastName
-  image: ImageSrc
+  prenom: FirstName;
+  nom: LastName;
+  image: ImageSrc;
 }

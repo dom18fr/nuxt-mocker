@@ -45,7 +45,10 @@ export default defineNuxtModule<ModuleOptions>({
         }
       }
       const { resolve } = createResolver(import.meta.url)
-      addPlugin(resolve('./runtime/nuxt-mocker-plugin'))
+      addPlugin({
+        src: resolve('./runtime/nuxt-mocker-plugin'),
+        mode: 'server'
+      })
     }
   }
 })

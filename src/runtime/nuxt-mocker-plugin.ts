@@ -23,8 +23,8 @@ const mockableFetch =
   (baseFetch) => async (path: string, options: Record<string, unknown>) => {
     const config = getMockConfig(path);
     if (config) {
-      const types = useRuntimeConfig().nuxtMocker.types
-      const typeConfig = useRuntimeConfig().nuxtMocker.typeConfig
+      const types = useRuntimeConfig().public.nuxtMocker.types
+      const typeConfig = useRuntimeConfig().public.nuxtMocker.typeConfig
       if (types) {
         const querySeed = useRoute().query.seed
         const seed = querySeed ? parseInt(String(querySeed)): undefined
@@ -40,7 +40,7 @@ const mockableFetch =
   };
 
 const getMockConfig = (path: string) => {
-  const mocks = useRuntimeConfig().nuxtMocker.mocks as MockConfigItem[]
+  const mocks = useRuntimeConfig().public.nuxtMocker.mocks as MockConfigItem[]
   return mocks.reduce(
     (acc: MockConfigItem | undefined, mockConfigItem) => {
       const pattern = new RegExp(mockConfigItem.pattern);

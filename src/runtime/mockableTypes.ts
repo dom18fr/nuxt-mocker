@@ -26,6 +26,10 @@ type CountryCode = string;
 
 type Country = string;
 
+type Latitude = number;
+
+type Longitude = number;
+
 type Int = number;
 
 type Float = number;

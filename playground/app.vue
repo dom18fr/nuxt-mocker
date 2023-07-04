@@ -1,19 +1,19 @@
 <script setup lang="ts">
-import { useAsyncData } from '#imports';
+import { useAsyncData, useState } from '#imports';
 
-const { data } = await useAsyncData(`trial_data`, () => $fetch<Youp>(`/my/real/path`), )
+const count = useState<number>(() => 0)
+
+const { data } = await useAsyncData(() => $fetch<Youp>(`/my/real/path`),{ watch: [ count ] })
+
+const up = () => {
+  count.value++
+}
 </script>
 
 <template>
   <div v-if="data">
-    <div>
-      {{ data }}
-    </div>
-    <div>
-      <img :src="data.aLargeImage" alt="" />
-    </div>
-    <div>
-      <img :src="data.anotherComplexType.image" alt=""/>
-    </div>
+    <div>lat: {{ data.lat }}</div>
+    <div>long: {{ data.long }}</div>
+    <button @click="up">{{ count }}</button>
   </div>
 </template>

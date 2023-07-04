@@ -79,6 +79,12 @@ const getCallablesDefinitions = (faker: Faker, generatorParams: Array<any> = [])
   Country: [
     faker.location.country
   ],
+  Latitude: [
+    faker.location.latitude
+  ],
+  Longitude: [
+    faker.location.longitude
+  ],
   Int: [
     faker.number.int
   ],

@@ -1,4 +1,7 @@
 {
   "extends": "./playground/.nuxt/tsconfig.json",
-  "exclude": ["./dist"]
+  "exclude": ["./dist"],
+  "compilerOptions": {
+    "allowSyntheticDefaultImports": true
+  }
 }

@@ -37,17 +37,20 @@ export default defineNuxtModule<ModuleOptions>({
       )
       nuxt.options.runtimeConfig = {
         ...nuxt.options.runtimeConfig,
-        nuxtMocker: {
-          mocks,
-          typeConfig,
-          // @ts-ignore
-          types,
+        public: {
+          ...nuxt.options.runtimeConfig.public,
+          nuxtMocker: {
+            mocks,
+            typeConfig,
+            // @ts-ignore
+            types,
+          }
         }
       }
       const { resolve } = createResolver(import.meta.url)
       addPlugin({
         src: resolve('./runtime/nuxt-mocker-plugin'),
-        mode: 'server'
+        mode: 'all'
       })
     }
   }

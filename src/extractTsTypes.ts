@@ -1,4 +1,4 @@
-import { TypeLiteralNode, SourceFile, SyntaxKind, TypeElementTypes, ts, TypeNode, TypeElementMemberedNode, ObjectLiteralExpression } from "ts-morph";
+import { TypeLiteralNode, SourceFile, SyntaxKind, TypeElementTypes, ts, TypeNode, TypeElementMemberedNode, ObjectLiteralExpression, ArrayTypeNode } from "ts-morph";
 import { FlatTypesRegistry } from './runtime/nuxtMockerTypes'
 
 export default async () => {
@@ -61,7 +61,6 @@ const extractInterfaces = (sourceFile: SourceFile) =>
 
 const extractTypeAliases = (sourceFile: SourceFile) =>
   sourceFile.getTypeAliases().reduce((sourceFileTypeAliases, typeAlias) => {
-    
     const typeNode = typeAlias.getTypeNode()
     if (typeNode?.getKindName() === 'TypeLiteral') {
 
@@ -76,6 +75,17 @@ const extractTypeAliases = (sourceFile: SourceFile) =>
           isNullable: false,
         }
       };
+    }
+
+    if (typeNode?.getKindName() === 'ArrayType') {
+      return {
+        ...sourceFileTypeAliases,
+        [typeAlias.getName()]: {
+          typeName: (typeNode as ArrayTypeNode).getElementTypeNode().getText(),
+          isCollection: true,
+          isNullabe: (typeNode as ArrayTypeNode).getType().isNullable()
+        }
+      }
     }
 
     return sourceFileTypeAliases

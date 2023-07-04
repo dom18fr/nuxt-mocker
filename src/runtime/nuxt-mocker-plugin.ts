@@ -2,7 +2,6 @@ import { defineNuxtPlugin, useRoute } from "#app";
 import { useRuntimeConfig } from "#imports";
 import delay from "delay";
 import { getCallable, isMockable } from "./fakerGenerator";
-import memo from "fast-memoize";
 import { MockConfigItem, FlatType, FlatTypesRegistry, GeneratorCallable, MockedData, PolygenOptions, TypeConfigItem } from "./nuxtMockerTypes";
 
 export default defineNuxtPlugin(() => {
@@ -73,7 +72,7 @@ const buildMock = (
     )
   }
   if (type.union) {
-    const index = seed ? randomMemoUnionIndex(type.union, seed) : randomUnionIndex(type.union)
+    const index = randomUnionIndex(type.union)
     
     return buildMockNode(type.union[index], types, mockConfig, `${path}[${index}]`, typeConfig, seed)
   }
@@ -162,5 +161,4 @@ const polygen = (
   )
 }
 
-const randomMemoUnionIndex = memo((union: FlatType[], seed: number) => Math.floor(Math.random() * union.length))
 const randomUnionIndex = (union: FlatType[]) => Math.floor(Math.random() * union.length)

@@ -1,6 +1,4 @@
-import memo from "fast-memoize";
-
-export default memo((plainText: string) => plainText.split('\n').reduce((acc, paragraph) => `${acc}<p>${injectInParagraph(paragraph).text}</p>`,''))
+export default (plainText: string) => plainText.split('\n').reduce((acc, paragraph) => `${acc}<p>${injectInParagraph(paragraph).text}</p>`,'')
 
 const injectInParagraph = (paragraph: string) => paragraph.split(' ').reduce(
   (htmlAcc, word: string, currentIndex: number) => {

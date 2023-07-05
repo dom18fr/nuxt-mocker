@@ -1,6 +1,8 @@
-type Youp = YoupItem[]
+type Youp = {
+  test?: Yolo[]
+}
 
-type YoupItem = {
-  lat: Latitude;
-  long: Longitude;
+type Yolo = {
+  text: Words,
+  id: Word,
 }

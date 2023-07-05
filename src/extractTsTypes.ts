@@ -96,10 +96,10 @@ const extractTypeAliases = (sourceFile: SourceFile) =>
 const extractMembers = (members: FlatTypesRegistry | {}, member: TypeElementTypes) => {
   const memberType = member.getType()
   const memberSymbol = member.getSymbol()
+  
   if (memberSymbol) {
     // Array
-    if (memberType.isArray()) {
-
+    if (member.compilerNode.type?.kind === SyntaxKind.ArrayType) {
       return {
         ...members,
         [memberSymbol.getName()]: {

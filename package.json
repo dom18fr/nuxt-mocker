@@ -29,7 +29,7 @@
   },
   "dependencies": {
     "@faker-js/faker": "^8.0.2",
-    "@nuxt/kit": "^3.5.3",
+    "@nuxt/kit": "^3.6.5",
     "@types/memoizee": "^0.4.8",
     "delay": "^6.0.0",
     "ts-morph": "^18.0.0"

@@ -1,6 +1,7 @@
 {
   "extends": "./playground/.nuxt/tsconfig.json",
   "exclude": ["./dist"],
+  "files": ["./src/runtime/mockableTypes.d.ts"],
   "compilerOptions": {
     "allowSyntheticDefaultImports": true
   }

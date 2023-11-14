@@ -13,10 +13,11 @@ export type TypeConfigItem = { path: string } & PolygenConfigItem // @todo: add 
 export type RootMockConfigItem = {
   pattern: string;
   type?: string;
+  factory: string;
   delay?: number;
 }
 
-export type MockConfigItem = RootMockConfigItem & PolygenConfigItem // @todo: add {factory?: Function | string} in it
+export type MockConfigItem = RootMockConfigItem & PolygenConfigItem
 
 export type FlatTypesRegistry = Record<string, FlatType>
 

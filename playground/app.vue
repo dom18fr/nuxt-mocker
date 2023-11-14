@@ -1,15 +1,11 @@
 <script setup lang="ts">
-import { useAsyncData, useState, useRuntimeConfig } from '#imports';
+import { useAsyncData } from '#imports';
+import type { Yolo } from 'types/types'
 
-const count = useState<number>(() => 0)
-
-const { data } = await useAsyncData(() => $fetch<Youp>(`/my/real/path`),{ watch: [ count ] })
-const mocks = useRuntimeConfig().public.nuxtMocker.types
+const { data } = await useAsyncData(() => $fetch<Yolo>(`/my/real/path`))
 
 </script>
 
 <template>
-  <pre>{{mocks}}</pre>
-  <button @click="count++">MORE</button>
   <pre>{{ data }}</pre>
 </template>

@@ -5,9 +5,10 @@ export default defineNuxtConfig({
     mocks: [
       {
         pattern: '^.*/real/.*$',
-        type: 'Youp',
+        factory: 'yoloFactory'
       }
-    ]
+    ],
+    factoriesPath: '../../playground/factories'
   },
   runtimeConfig: {
     public: {

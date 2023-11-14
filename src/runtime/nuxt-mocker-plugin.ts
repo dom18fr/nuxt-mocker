@@ -3,12 +3,13 @@ import { useRuntimeConfig } from "#imports";
 import delay from "delay";
 import { getCallable, isMockable } from "./fakerGenerator";
 import { MockConfigItem, FlatType, FlatTypesRegistry, GeneratorCallable, MockedData, PolygenOptions, TypeConfigItem } from "./nuxtMockerTypes";
+import * as factories from '@/factories/index'
 
 export default defineNuxtPlugin(() => {
   const baseFetch = globalThis.$fetch;
   // @ts-ignore
   globalThis.$fetch = mockableFetch(baseFetch);
-
+  
   return {
     provide: {},
     name: "nuxt-mocker-plugin",
@@ -18,9 +19,17 @@ export default defineNuxtPlugin(() => {
 
 // @todo: Better use ofetch.create() (see https://github.com/unjs/ofetch/issues/79)
 const mockableFetch =
-// @ts-ignore
+  // @ts-ignore
   (baseFetch) => async (path: string, options: Record<string, unknown>) => {
     const config = getMockConfig(path);
+    const types = useRuntimeConfig().public.nuxtMocker.types
+    const typeConfig = useRuntimeConfig().public.nuxtMocker.typeConfig
+    if (config?.factory) {
+      const { factory, delay: delayValue, ...factoryConfig } = config
+      await delay(delayValue || 0)
+      // @ts-ignore
+      return factories.default[factory](factoryConfig, delegateBuildMock(factoryConfig, types, typeConfig))
+    }
     if (config) {
       const types = useRuntimeConfig().public.nuxtMocker.types
       const typeConfig = useRuntimeConfig().public.nuxtMocker.typeConfig
@@ -52,6 +61,11 @@ const getMockConfig = (path: string) => {
     undefined
   );
 };
+
+const delegateBuildMock = (mockConfigItem: MockConfigItem, types: FlatTypesRegistry, typeConfig: TypeConfigItem[]) => (type: string) => {
+
+  return buildMock(mockConfigItem, types[type], types, type, typeConfig)
+}
 
 const buildMock = (
   mockConfig: MockConfigItem,

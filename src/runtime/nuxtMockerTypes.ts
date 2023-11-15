@@ -13,7 +13,7 @@ export type TypeConfigItem = { path: string } & PolygenConfigItem // @todo: add 
 export type RootMockConfigItem = {
   pattern: string;
   type?: string;
-  factory: string;
+  factory?: string;
   delay?: number;
 }
 

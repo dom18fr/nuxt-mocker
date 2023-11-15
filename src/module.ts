@@ -1,4 +1,4 @@
-import { defineNuxtModule, addPlugin, createResolver, addTypeTemplate } from "@nuxt/kit"
+import { defineNuxtModule, addPlugin, createResolver, addTypeTemplate, addTemplate } from "@nuxt/kit"
 import extractTsTypes from "./extractTsTypes"
 import { MockConfigItem, FlatTypesRegistry, TypeConfigItem } from "./runtime/nuxtMockerTypes"
 
@@ -78,6 +78,10 @@ type ImageSrc = string;
       addPlugin({
         src: resolve('./runtime/nuxt-mocker-plugin'),
         mode: 'all'
+      })
+      addTemplate({
+        filename: 'factories/index.ts',
+        getContents: () => 'export default {}'
       })
     }
   }

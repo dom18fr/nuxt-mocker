@@ -1,6 +1,6 @@
 {
   "name": "nuxt-mocker",
-  "version": "1.0.45",
+  "version": "1.0.46",
   "description": "A Typescript based Nuxt mocking tool, using fakerjs",
   "repository": "dom18fr/nuxt-mocker",
   "license": "MIT",

@@ -3,7 +3,6 @@ import { useRuntimeConfig } from "#imports";
 import delay from "delay";
 import { getCallable, isMockable } from "./fakerGenerator";
 import { MockConfigItem, FlatType, FlatTypesRegistry, GeneratorCallable, MockedData, PolygenOptions, TypeConfigItem } from "./nuxtMockerTypes";
-import * as factories from '@/factories/index'
 
 export default defineNuxtPlugin(() => {
   const baseFetch = globalThis.$fetch;
@@ -25,6 +24,8 @@ const mockableFetch =
     const types = useRuntimeConfig().public.nuxtMocker.types
     const typeConfig = useRuntimeConfig().public.nuxtMocker.typeConfig
     if (config?.factory) {
+      // @ts-ignore 
+      const factories = await import('@/factories/index.ts').catch()
       const { factory, delay: delayValue, ...factoryConfig } = config
       await delay(delayValue || 0)
       // @ts-ignore

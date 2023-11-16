@@ -85,7 +85,7 @@ const getExtendedType = (typeName: string, flatTypes: FlatTypesRegistry): FlatTy
 
 const extractInterfaces = (sourceFile: SourceFile) =>
   sourceFile.getInterfaces().reduce((sourceFileInterfaces, interfaceItem) => {
-    if (interfaceItem.getMembers().length > 0) {
+    if (interfaceItem.getMembers().length > 0 || interfaceItem.getHeritageClauses().length > 0) {
       return {
         ...sourceFileInterfaces,
         [interfaceItem.compilerNode.name.getText()]: {

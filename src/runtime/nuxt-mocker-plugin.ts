@@ -40,8 +40,14 @@ const mockableFetch =
         await delay(config.delay || 0)
         // @ts-ignore
         const type = types[config.type]
-        // @ts-ignore
-        return buildMock(config, type, types, config.type, typeConfig, seed)
+        try {
+          // @ts-ignore
+          return buildMock(config, type, types, config.type, typeConfig, seed)
+        } catch (error) {
+          console.log(error)
+          // @ts-ignore
+          return { mockGenerationFailed: error.message }
+        }
       }
     }
 
@@ -64,8 +70,14 @@ const getMockConfig = (path: string) => {
 };
 
 const delegateBuildMock = (mockConfigItem: MockConfigItem, types: FlatTypesRegistry, typeConfig: TypeConfigItem[]) => (type: string) => {
+  try {
 
-  return buildMock(mockConfigItem, types[type], types, type, typeConfig)
+    return buildMock(mockConfigItem, types[type], types, type, typeConfig);
+  } catch (error) {
+    console.log(error)
+    // @ts-ignore
+    return { mockGenerationFailed: error.message}
+  }
 }
 
 const buildMock = (

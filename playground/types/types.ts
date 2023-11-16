@@ -1,14 +1,17 @@
-export type Yolo = Toto | Tata
-
-export type Test = 'io' | 'kk'
-
-export interface Toto {
+export interface Tata {
+  machin: Words,
+  yolo: Words,
+}
+interface Titi extends Tata {
   truc: string
 }
 
-export interface Tata {
-  machin: string,
-  yolo: Test | Toto
+export interface Toto extends Titi, Youp {
+  bidule: RelativePath
+}
+
+interface Youp {
+  youp: Words
 }
 
 // export type PageContent = {

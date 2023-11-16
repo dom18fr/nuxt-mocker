@@ -1,8 +1,8 @@
 <script setup lang="ts">
 import { useAsyncData } from '#imports';
-import type { Yolo } from 'types/types'
+import type { Toto } from 'types/types'
 
-const { data } = await useAsyncData(() => $fetch<Yolo>(`/my/real/path`))
+const { data } = await useAsyncData(() => $fetch<Toto>(`/my/real/path`))
 
 </script>
 

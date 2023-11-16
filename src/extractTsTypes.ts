@@ -1,5 +1,5 @@
-import { TypeLiteralNode, SourceFile, SyntaxKind, TypeElementTypes, ts, ArrayTypeNode, UnionTypeNode, LiteralTypeNode, TypeReferenceNode } from "ts-morph";
-import { FlatTypesRegistry } from './runtime/nuxtMockerTypes'
+import { TypeLiteralNode, SourceFile, SyntaxKind, TypeElementTypes, ts, ArrayTypeNode, UnionTypeNode, LiteralTypeNode, InterfaceDeclaration } from "ts-morph";
+import { FlatType, FlatTypesRegistry } from './runtime/nuxtMockerTypes'
 
 export default async () => {
   const sourceFiles = await getTsSourceFiles()
@@ -19,7 +19,7 @@ export default async () => {
     {}
   )
 
-  return flatTypes
+  return compileExtends(flatTypes)
 };
 
 const getTsSourceFiles = async () => {
@@ -35,15 +35,61 @@ const getTsSourceFiles = async () => {
   }).getSourceFiles();
 };
 
+const getExtends = (interfaceItem: InterfaceDeclaration): Record<string, string[]> => {
+  if (interfaceItem.getHeritageClauses().length > 0) {
+    const clause = interfaceItem.getHeritageClauses()[0]
 
+    return {
+      extends: clause.getTypeNodes().map((typeNode) => typeNode.getText())
+    }
+  }
+
+  return {}
+}
+
+const compileExtends = (flatTypes: FlatTypesRegistry): FlatTypesRegistry => Object.keys(flatTypes).reduce(
+  (compiledFlatTypes: FlatTypesRegistry, typeName: string) => {
+    if (flatTypes[typeName]?.extends && flatTypes[typeName]?.object) {
+      return {
+        ...compiledFlatTypes,
+        [typeName]: getExtendedType(typeName, flatTypes)
+      }
+    }
+
+    return compiledFlatTypes
+  }, 
+  flatTypes
+)
+
+const getExtendedType = (typeName: string, flatTypes: FlatTypesRegistry): FlatType => {
+  return (flatTypes[typeName].extends || []).reduce(
+    (compiledFlatType: FlatType, extendName: string) => {
+      if (flatTypes[extendName]?.object) {
+        const extendableFlatType = flatTypes[extendName]
+        const extendableProps = extendableFlatType.extends ? getExtendedType(extendName, flatTypes).object : flatTypes[extendName].object
+
+        return {
+          ...compiledFlatType,
+          object: {
+            ...extendableProps,
+            ...compiledFlatType.object
+          }
+        }
+      }
+
+      return compiledFlatType
+    }, 
+    flatTypes[typeName]
+  )
+}
 
 const extractInterfaces = (sourceFile: SourceFile) =>
   sourceFile.getInterfaces().reduce((sourceFileInterfaces, interfaceItem) => {
     if (interfaceItem.getMembers().length > 0) {
-
       return {
         ...sourceFileInterfaces,
         [interfaceItem.compilerNode.name.getText()]: {
+          ...getExtends(interfaceItem),
           object: interfaceItem.getMembers().reduce(
             extractMembers,
             {}

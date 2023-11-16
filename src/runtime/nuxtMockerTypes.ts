@@ -23,6 +23,7 @@ export type FlatTypesRegistry = Record<string, FlatType>
 
 export type FlatType = {
   typeName?: string;
+  extends?: string[];
   literal?: string | number | boolean;
   union?: FlatType[];
   object?: FlatTypesRegistry;

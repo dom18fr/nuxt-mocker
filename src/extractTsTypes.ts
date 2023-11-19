@@ -256,6 +256,19 @@ const extractMembers = (members: FlatTypesRegistry | {}, member: TypeElementType
       }
     }
 
+    // Literal
+    if (memberType.isLiteral()) {
+      
+      return {
+        ...members,
+        [memberSymbol.getName()]: {
+          literal: getLiteralValue(member.compilerNode.type as ts.LiteralTypeNode),
+          isNullable: false,
+          isCollection: false,
+        }
+      }
+    }
+
     // @todo: should implement Record<>
 
     // Simple

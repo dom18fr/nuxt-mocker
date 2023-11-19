@@ -112,7 +112,7 @@ const buildMock = (
 
         return {
           ...mocked,
-          ...(value ? { [key]: value }: {})
+          ...(value !== undefined ? { [key]: value }: {})
         }
       }, 
       {}
@@ -146,7 +146,7 @@ const buildMockNode = (type: FlatType, types: FlatTypesRegistry, mockConfig: Moc
 
       return polygen(
         buildMock,
-        [ mockConfig, {...type, typeName: undefined, object: subtype.object}, types, path, typeConfig, seed ],
+        [ mockConfig, {...type, typeName: undefined, object: subtype.object, union: subtype.union}, types, path, typeConfig, seed ],
         polygenOptions,
       )
     }

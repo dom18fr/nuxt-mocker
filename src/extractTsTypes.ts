@@ -124,6 +124,7 @@ const extractTypeAliases = (sourceFile: SourceFile) =>
     }
 
     if (typeNode?.getKindName() === 'ArrayType') {
+
       return {
         ...sourceFileTypeAliases,
         [typeAlias.getName()]: {
@@ -140,8 +141,9 @@ const extractTypeAliases = (sourceFile: SourceFile) =>
         [typeAlias.getName()]: {
           union: (typeNode as UnionTypeNode).getTypeNodes().map((typeNode) => {
             if (typeNode.getKindName() === 'LiteralType') {
+              
               return {
-                literal: (typeNode as LiteralTypeNode).getText(),
+                literal: getAliasLiteralValue(typeNode as LiteralTypeNode),
                 isNullable: false,
                 isCollection: false,
               }
@@ -295,6 +297,21 @@ const getLiteralValue = (type: ts.LiteralTypeNode) => {
       return false
     case type.literal.kind === SyntaxKind.NumericLiteral:
       return parseFloat(type.literal.getText())
+    default:
+      return undefined
+  }
+}
+
+const getAliasLiteralValue = (type: LiteralTypeNode) => {
+  switch(true) {
+    case type.getLiteral().getKindName() === 'StringLiteral':
+      return type.getLiteral().getText().slice(1,-1)
+    case type.getLiteral().getKindName() === 'TrueKeyword':
+      return true
+    case type.getLiteral().getKindName() === 'FalseKeyword':
+      return false
+    case type.getLiteral().getKindName() === 'NumericLiteral':
+      return parseFloat(type.getLiteral().getText())
     default:
       return undefined
   }

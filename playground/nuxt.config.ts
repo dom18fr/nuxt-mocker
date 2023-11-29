@@ -5,7 +5,7 @@ export default defineNuxtConfig({
     mocks: [
       {
         pattern: '^.*/real/.*$',
-        type: 'Test'
+        type: 'ApiMediaEntityType'
       }
     ],
   },

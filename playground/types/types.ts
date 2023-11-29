@@ -1,14 +1,11 @@
-export interface Test {
-  simpleString: Word,
-  template: 'home',
-  langcode: LanguageType,
-  yolo: Toto,
-  test: 'yop' | 'nope' | false,
-  num: 1 | 2 | 3
-}
+export type StringFieldItemType = { 
+  value: Word 
+};
+export type StringFieldType = StringFieldItemType[]; // @todo: this is properly extracted, but runtime generation fails
 
-export type LanguageType = 'fr' | 'en';
-
-type Toto = {
-  to: true | false;
+export interface ApiMediaEntityType {
+  truc: StringFieldType,
+  yolo: {
+    toto: Words
+  }
 }

@@ -143,12 +143,21 @@ const buildMockNode = (type: FlatType, types: FlatTypesRegistry, mockConfig: Moc
     }
     const subtype = types[type.typeName]
     if (subtype) {
+      if (subtype.object || subtype.union) {
+        
+        return polygen(
+          buildMock,
+          [ mockConfig, {...type, typeName: undefined, object: subtype.object, union: subtype.union}, types, path, typeConfig, seed ],
+          polygenOptions,
+        )
+      } else {
 
-      return polygen(
-        buildMock,
-        [ mockConfig, {...type, typeName: undefined, object: subtype.object, union: subtype.union}, types, path, typeConfig, seed ],
-        polygenOptions,
-      )
+        return polygen(
+          buildMock,
+          [ mockConfig, {...type, typeName: subtype.typeName, isCollection: subtype.isCollection }, types, path, typeConfig, seed ],
+          polygenOptions,
+        )
+      }
     }
   }
 
@@ -170,7 +179,6 @@ const polygen = (
     probabilityPercent = 50
   }: PolygenOptions
 ) => {
-  
   if (isNullable && Math.random() * 100 > probabilityPercent) {
 
     return undefined

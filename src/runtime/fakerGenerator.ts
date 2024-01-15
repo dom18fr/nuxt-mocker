@@ -2,7 +2,7 @@ import { Faker, faker } from "@faker-js/faker";
 import injectRandomHtml from "./injectRandomHtml";
 
 export const isMockable = (name: string) => {
-  
+
   return getCallablesDefinitions(faker).hasOwnProperty(name)
 }
 
@@ -12,7 +12,7 @@ export const getCallable = (name: string, seed?: number, generatorParams?: Array
 
   return definitions[name] || [() => undefined, []]
 }
- 
+
 const getCallablesDefinitions = (faker: Faker, generatorParams: Array<any> = []) => ({
   string : [ faker.lorem.sentence ],
   number: [ faker.number.int ],
@@ -21,7 +21,7 @@ const getCallablesDefinitions = (faker: Faker, generatorParams: Array<any> = [])
   Word: [ faker.lorem.word ],
   RelativePath: [
     (options: { min: number, max: number }) => (
-      '/' + 
+      '/' +
       faker.helpers.slugify(
         faker.lorem.words(options)
       )
@@ -29,9 +29,9 @@ const getCallablesDefinitions = (faker: Faker, generatorParams: Array<any> = [])
     [ { min: 1, max: 4 } ]
   ],
   AbsolutePath: [
-    ({ 
-      protocol, 
-      ...wordsOptions 
+    ({
+      protocol,
+      ...wordsOptions
     }: { protocol: 'http'|'https', min: number, max: number }) => (
       faker.internet.url({ appendSlash: true, protocol }) +
       faker.helpers.slugify(
@@ -94,5 +94,9 @@ const getCallablesDefinitions = (faker: Faker, generatorParams: Array<any> = [])
   ImageSrc: [
     faker.image.url,
     [ ...generatorParams ]
-  ]
+  ],
+  PhoneNumber: [
+    faker.phone.number,
+    [ '+##########' ]
+  ],
 })

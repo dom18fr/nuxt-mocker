@@ -35,3 +35,5 @@ type Int = number;
 type Float = number;
 
 type ImageSrc = string;
+
+type PhoneNumber = string;

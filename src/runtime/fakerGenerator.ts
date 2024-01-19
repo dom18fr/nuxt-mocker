@@ -96,7 +96,6 @@ const getCallablesDefinitions = (faker: Faker, generatorParams: Array<any> = [])
     [ ...generatorParams ]
   ],
   PhoneNumber: [
-    faker.phone.number,
-    [ '+##########' ]
+    faker.phone.number
   ],
 })
